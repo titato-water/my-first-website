@@ -24,6 +24,7 @@ export function useComments(postId) {
       .then(({ data }) => setComments(data ?? []));
   }, [postId]);
 
+  /** it_posts.comments_count 증감과 'comment' 알림 생성은 DB 트리거가 처리합니다. */
   const addComment = useCallback(
     async (content) => {
       if (!session?.user?.id || !content.trim()) {
@@ -38,13 +39,9 @@ export function useComments(postId) {
         return { error };
       }
       setComments((prev) => [...prev, data]);
-      await supabase
-        .from('it_posts')
-        .update({ comments_count: comments.length + 1 })
-        .eq('id', postId);
       return { data };
     },
-    [comments.length, postId, session],
+    [postId, session],
   );
 
   return { comments, addComment };

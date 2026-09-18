@@ -28,6 +28,7 @@ export function usePostReaction(post) {
       .then(({ data }) => setMyReaction(data?.reaction ?? null));
   }, [post.id, session]);
 
+  /** it_posts의 추천/비추천 카운트 증감과 'recommend' 알림 생성은 DB 트리거가 처리합니다. */
   const setReaction = useCallback(
     async (reaction) => {
       if (!session?.user?.id) return;
@@ -50,10 +51,6 @@ export function usePostReaction(post) {
 
       setRecommendCount(nextRecommend);
       setNotRecommendCount(nextNotRecommend);
-      await supabase
-        .from('it_posts')
-        .update({ recommend_count: nextRecommend, not_recommend_count: nextNotRecommend })
-        .eq('id', post.id);
     },
     [myReaction, notRecommendCount, post.id, recommendCount, session],
   );

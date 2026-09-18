@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase.js';
 import { useSession } from './useSession.js';
-import { createNotification } from './useNotifications.js';
 
 /**
  * useFollow
@@ -41,13 +40,13 @@ export function useFollow(targetUserId) {
     }
   }, [refreshCounts, session, targetUserId]);
 
+  /** 'follow' 알림 생성은 DB 트리거가 처리합니다. */
   const toggleFollow = useCallback(async () => {
     if (!session?.user?.id || session.user.id === targetUserId) return;
     if (isFollowing) {
       await supabase.from('it_follows').delete().eq('follower_id', session.user.id).eq('following_id', targetUserId);
     } else {
       await supabase.from('it_follows').insert({ follower_id: session.user.id, following_id: targetUserId });
-      await createNotification(targetUserId, session.user.id, 'follow', null);
     }
     setIsFollowing((prev) => !prev);
     refreshCounts();

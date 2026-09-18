@@ -39,18 +39,9 @@ export function useNotifications() {
   return { notifications, markAsRead };
 }
 
-/**
- * createNotification
- *
- * @param {string} recipientId - 알림 받는 사용자 id [Required]
- * @param {string} actorId - 알림을 발생시킨 사용자 id [Required]
- * @param {string} type - 'like' | 'comment' | 'follow' | 'recommend' [Required]
- * @param {number} targetId - 대상 게시물/댓글 id [Optional]
- *
- * Example usage:
- * createNotification(post.user_id, session.user.id, 'like', post.id);
+/*
+ * 알림 행 생성(INSERT)은 클라이언트에서 수행하지 않습니다.
+ * it_notifications 에는 INSERT 정책이 없으며, 좋아요/댓글/추천/팔로우 알림은
+ * SECURITY DEFINER 트리거(it_handle_post_like / it_handle_comment /
+ * it_handle_post_reaction / it_handle_follow)가 서버에서 생성합니다.
  */
-export async function createNotification(recipientId, actorId, type, targetId) {
-  if (recipientId === actorId) return;
-  await supabase.from('it_notifications').insert({ recipient_id: recipientId, actor_id: actorId, type, target_id: targetId ?? null });
-}
