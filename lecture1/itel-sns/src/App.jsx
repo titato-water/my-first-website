@@ -9,6 +9,7 @@ import ProfilePage from './pages/ProfilePage.jsx';
 import ExplorePage from './pages/ExplorePage.jsx';
 import ChatListPage from './pages/ChatListPage.jsx';
 import ChatRoomPage from './pages/ChatRoomPage.jsx';
+import NotificationsPage from './pages/NotificationsPage.jsx';
 import ProtectedRoute from './components/common/ProtectedRoute.jsx';
 import AppLayout from './components/common/AppLayout.jsx';
 import { useSession } from './hooks/useSession.js';
@@ -97,6 +98,16 @@ function App() {
           <ProtectedRoute>
             <AppLayout>
               <ChatRoomPage />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/notifications"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <NotificationsPage />
             </AppLayout>
           </ProtectedRoute>
         }

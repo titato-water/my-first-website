@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase.js';
 import { useSession } from './useSession.js';
+import { createNotification } from './useNotifications.js';
 
 /**
  * usePostLike
@@ -37,6 +38,7 @@ export function usePostLike(post) {
       await supabase.from('it_post_likes').insert({ post_id: post.id, user_id: session.user.id });
       setIsLiked(true);
       setLikesCount((count) => count + 1);
+      await createNotification(post.user_id, session.user.id, 'like', post.id);
     }
     await supabase.from('it_posts').update({ likes_count: isLiked ? likesCount - 1 : likesCount + 1 }).eq('id', post.id);
   }, [isLiked, likesCount, post.id, session]);

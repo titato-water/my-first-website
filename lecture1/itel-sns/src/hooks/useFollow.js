@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase.js';
 import { useSession } from './useSession.js';
+import { createNotification } from './useNotifications.js';
 
 /**
  * useFollow
@@ -46,6 +47,7 @@ export function useFollow(targetUserId) {
       await supabase.from('it_follows').delete().eq('follower_id', session.user.id).eq('following_id', targetUserId);
     } else {
       await supabase.from('it_follows').insert({ follower_id: session.user.id, following_id: targetUserId });
+      await createNotification(targetUserId, session.user.id, 'follow', null);
     }
     setIsFollowing((prev) => !prev);
     refreshCounts();
