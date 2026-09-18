@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -9,6 +9,8 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SendIcon from '@mui/icons-material/Send';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import { supabase } from '../lib/supabase.js';
+import { useSession } from '../hooks/useSession.js';
 import { useChatMessages } from '../hooks/useChatMessages.js';
 import { getRandomImageOptions } from '../utils/randomImage.js';
 
@@ -23,8 +25,30 @@ import { getRandomImageOptions } from '../utils/randomImage.js';
 function ChatRoomPage() {
   const { roomId } = useParams();
   const navigate = useNavigate();
-  const { messages, sendMessage } = useChatMessages(roomId);
+  const { session } = useSession();
+  const userId = session?.user?.id;
+  const [joinedRoomId, setJoinedRoomId] = useState(null);
   const [draft, setDraft] = useState('');
+
+  /**
+   * 채팅방 페이지에 들어오면 자동으로 참여 처리합니다.
+   * it_messages의 RLS 정책이 it_chat_room_members 소속을 요구하므로,
+   * 방을 만든 사람 외에는 이 단계가 없으면 메시지를 보거나 보낼 수 없습니다.
+   * 참여가 끝난 뒤에야 메시지를 조회하도록 joinedRoomId 를 통해 순서를 보장합니다.
+   */
+  useEffect(() => {
+    if (!roomId || !userId) return;
+    supabase
+      .from('it_chat_room_members')
+      .upsert({ room_id: roomId, user_id: userId }, { onConflict: 'room_id,user_id', ignoreDuplicates: true })
+      .then(({ error }) => {
+        if (error) console.error('채팅방 참여 처리 실패:', error.message);
+        setJoinedRoomId(roomId);
+      });
+  }, [roomId, userId]);
+
+  const activeRoomId = joinedRoomId === roomId ? roomId : null;
+  const { messages, sendMessage } = useChatMessages(activeRoomId);
 
   const handleSendText = async () => {
     await sendMessage(draft, 'text');

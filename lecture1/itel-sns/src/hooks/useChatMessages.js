@@ -5,7 +5,7 @@ import { useSession } from './useSession.js';
 /**
  * useChatMessages
  *
- * @param {number} roomId - 채팅방 id [Required]
+ * @param {number} roomId - 채팅방 id [Required, 값이 없으면 조회/구독하지 않음]
  * @returns {{ messages: Array, sendMessage: function }}
  *
  * Example usage:
@@ -16,6 +16,7 @@ export function useChatMessages(roomId) {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
+    if (!roomId) return;
     supabase
       .from('it_messages')
       .select('*, it_users(username, display_name, avatar_url)')
@@ -46,7 +47,7 @@ export function useChatMessages(roomId) {
 
   const sendMessage = useCallback(
     async (content, messageType = 'text') => {
-      if (!session?.user?.id || !content) return;
+      if (!roomId || !session?.user?.id || !content) return;
       await supabase.from('it_messages').insert({
         room_id: roomId,
         sender_id: session.user.id,
