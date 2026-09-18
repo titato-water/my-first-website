@@ -78,6 +78,16 @@ function ChatRoomPage() {
   );
 }
 
+/**
+ * ChatMessageItem
+ *
+ * Props:
+ * @param {object} message - it_users가 조인된 채팅 메시지 row [Required]
+ * @param {function} onGoToProfile - 보낸 사람 아바타 클릭 시 실행할 함수 [Required]
+ *
+ * Example usage:
+ * <ChatMessageItem message={message} onGoToProfile={() => navigate('/profile/username')} />
+ */
 function ChatMessageItem({ message, onGoToProfile }) {
   return (
     <Box sx={{ display: 'flex', gap: 1 }}>
