@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -11,6 +12,9 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { usePostLike } from '../../hooks/usePostLike.js';
 
+/** 더블탭으로 인정할 두 번째 탭까지의 최대 간격 (ms) */
+const DOUBLE_TAP_THRESHOLD_MS = 300;
+
 /**
  * PostCard
  *
@@ -23,6 +27,37 @@ function PostCard({ post }) {
   const navigate = useNavigate();
   const author = post.it_users;
   const { isLiked, likesCount, toggleLike } = usePostLike(post);
+  const lastTapRef = useRef(0);
+  const tapTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (tapTimeoutRef.current) clearTimeout(tapTimeoutRef.current);
+    };
+  }, []);
+
+  /**
+   * 이미지 탭 처리
+   * 브라우저는 더블클릭 시 click 이벤트를 먼저 두 번 발생시키므로,
+   * onDoubleClick 대신 탭 간격을 직접 재서 단일 탭(상세 이동)과 더블 탭(좋아요)을 구분합니다.
+   */
+  const handleImageTap = () => {
+    const now = Date.now();
+    if (now - lastTapRef.current < DOUBLE_TAP_THRESHOLD_MS) {
+      if (tapTimeoutRef.current) {
+        clearTimeout(tapTimeoutRef.current);
+        tapTimeoutRef.current = null;
+      }
+      lastTapRef.current = 0;
+      toggleLike();
+    } else {
+      lastTapRef.current = now;
+      tapTimeoutRef.current = setTimeout(() => {
+        navigate(`/posts/${post.id}`);
+        tapTimeoutRef.current = null;
+      }, DOUBLE_TAP_THRESHOLD_MS);
+    }
+  };
 
   return (
     <Card sx={{ mb: 2 }}>
@@ -37,8 +72,7 @@ function PostCard({ post }) {
         component="img"
         image={post.image_url}
         alt={post.caption ?? '게시물 이미지'}
-        onDoubleClick={toggleLike}
-        onClick={() => navigate(`/posts/${post.id}`)}
+        onClick={handleImageTap}
         sx={{ aspectRatio: '1 / 1', objectFit: 'cover', cursor: 'pointer' }}
       />
       <CardContent>
