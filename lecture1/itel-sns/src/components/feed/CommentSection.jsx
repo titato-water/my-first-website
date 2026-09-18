@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import Alert from '@mui/material/Alert';
 import { useComments } from '../../hooks/useComments.js';
 
 /**
@@ -16,9 +17,15 @@ import { useComments } from '../../hooks/useComments.js';
 function CommentSection({ postId }) {
   const { comments, addComment } = useComments(postId);
   const [draft, setDraft] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = async () => {
-    await addComment(draft);
+    setErrorMessage('');
+    const { error } = await addComment(draft);
+    if (error) {
+      setErrorMessage('댓글 등록에 실패했습니다. 다시 시도해 주세요.');
+      return;
+    }
     setDraft('');
   };
 
@@ -31,6 +38,12 @@ function CommentSection({ postId }) {
           </Typography>
         </Box>
       ))}
+
+      {errorMessage && (
+        <Alert severity="warning" sx={{ mb: 1 }}>
+          {errorMessage}
+        </Alert>
+      )}
 
       <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
         <TextField
