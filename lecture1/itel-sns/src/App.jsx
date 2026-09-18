@@ -8,6 +8,7 @@ import PostDetailPage from './pages/PostDetailPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import ExplorePage from './pages/ExplorePage.jsx';
 import ChatListPage from './pages/ChatListPage.jsx';
+import ChatRoomPage from './pages/ChatRoomPage.jsx';
 import ProtectedRoute from './components/common/ProtectedRoute.jsx';
 import AppLayout from './components/common/AppLayout.jsx';
 import { useSession } from './hooks/useSession.js';
@@ -86,6 +87,16 @@ function App() {
           <ProtectedRoute>
             <AppLayout>
               <ChatListPage />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/chat/:roomId"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <ChatRoomPage />
             </AppLayout>
           </ProtectedRoute>
         }
