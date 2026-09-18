@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage.jsx';
 import WritePage from './pages/WritePage.jsx';
 import FeedPage from './pages/FeedPage.jsx';
+import PostDetailPage from './pages/PostDetailPage.jsx';
 import ProtectedRoute from './components/common/ProtectedRoute.jsx';
 import AppLayout from './components/common/AppLayout.jsx';
 
@@ -25,6 +26,16 @@ function App() {
           <ProtectedRoute>
             <AppLayout>
               <WritePage />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/posts/:id"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <PostDetailPage />
             </AppLayout>
           </ProtectedRoute>
         }
