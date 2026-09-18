@@ -94,7 +94,7 @@ function PostDetailContent({ post, onBack }) {
       <ToggleButtonGroup
         value={myReaction}
         exclusive
-        onChange={(_event, value) => value && setReaction(value)}
+        onChange={(_event, value) => setReaction(value ?? myReaction)}
         sx={{ mb: 2 }}
       >
         <ToggleButton value="recommend">추천 {recommendCount}</ToggleButton>
