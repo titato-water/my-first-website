@@ -79,7 +79,7 @@ function WritePage() {
         ))}
       </Grid>
 
-      <Button onClick={handleRefreshImages} sx={{ alignSelf: 'flex-start' }}>
+      <Button onClick={handleRefreshImages} sx={{ alignSelf: 'flex-start', minHeight: 44 }}>
         다른 이미지 보기
       </Button>
 
