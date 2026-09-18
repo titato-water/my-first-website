@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { usePosts } from '../hooks/usePosts.js';
+import { usePullToRefresh } from '../hooks/usePullToRefresh.js';
 import PostCard from '../components/feed/PostCard.jsx';
 import StoryBar from '../components/feed/StoryBar.jsx';
 
@@ -16,6 +17,7 @@ import StoryBar from '../components/feed/StoryBar.jsx';
 function FeedPage() {
   const { posts, loading, hasMore, loadMore } = usePosts();
   const sentinelRef = useRef(null);
+  const { isRefreshing } = usePullToRefresh(() => window.location.reload());
 
   useEffect(() => {
     loadMore();
@@ -36,6 +38,10 @@ function FeedPage() {
 
   return (
     <Box>
+      {isRefreshing && (
+        <CircularProgress size={20} sx={{ display: 'block', mx: 'auto', mb: 1 }} />
+      )}
+
       <StoryBar />
 
       {posts.map((post) => (
