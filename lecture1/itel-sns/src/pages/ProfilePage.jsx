@@ -52,6 +52,16 @@ function ProfilePage() {
 
   const { isFollowing, followerCount, followingCount, toggleFollow } = useFollow(targetProfile?.id);
 
+  /**
+   * 로그아웃
+   * signOut 후 AuthContext의 onAuthStateChange가 session을 null로 갱신하고
+   * ProtectedRoute가 /login으로 보내므로 별도의 화면 이동 처리는 필요 없습니다.
+   */
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) console.error('로그아웃 실패:', error.message);
+  };
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
@@ -89,6 +99,12 @@ function ProfilePage() {
       {!isMyProfile && (
         <Button variant={isFollowing ? 'outlined' : 'contained'} onClick={toggleFollow} sx={{ mb: 2, minHeight: 44 }}>
           {isFollowing ? '팔로잉' : '팔로우'}
+        </Button>
+      )}
+
+      {isMyProfile && (
+        <Button variant="outlined" color="error" onClick={handleLogout} sx={{ mb: 2, minHeight: 44 }}>
+          로그아웃
         </Button>
       )}
 
