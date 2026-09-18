@@ -7,6 +7,7 @@ import FeedPage from './pages/FeedPage.jsx';
 import PostDetailPage from './pages/PostDetailPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import ExplorePage from './pages/ExplorePage.jsx';
+import ChatListPage from './pages/ChatListPage.jsx';
 import ProtectedRoute from './components/common/ProtectedRoute.jsx';
 import AppLayout from './components/common/AppLayout.jsx';
 import { useSession } from './hooks/useSession.js';
@@ -75,6 +76,16 @@ function App() {
           <ProtectedRoute>
             <AppLayout>
               <ExplorePage />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/chat"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <ChatListPage />
             </AppLayout>
           </ProtectedRoute>
         }

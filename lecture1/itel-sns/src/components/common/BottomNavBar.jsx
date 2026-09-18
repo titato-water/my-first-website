@@ -6,6 +6,7 @@ import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import HomeIcon from '@mui/icons-material/Home';
 import ExploreIcon from '@mui/icons-material/Explore';
 import AddBoxIcon from '@mui/icons-material/AddBox';
+import ChatIcon from '@mui/icons-material/Chat';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import PersonIcon from '@mui/icons-material/Person';
 
@@ -13,6 +14,7 @@ const NAV_ITEMS = [
   { label: '홈', value: '/', icon: <HomeIcon /> },
   { label: '탐색', value: '/explore', icon: <ExploreIcon /> },
   { label: '글쓰기', value: '/write', icon: <AddBoxIcon /> },
+  { label: '채팅', value: '/chat', icon: <ChatIcon /> },
   { label: '알림', value: '/notifications', icon: <NotificationsIcon /> },
   { label: '마이', value: '/me', icon: <PersonIcon /> },
 ];
