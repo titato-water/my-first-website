@@ -21,13 +21,14 @@ import { useFollow } from '../hooks/useFollow.js';
 function ProfilePage() {
   const { username } = useParams();
   const { profile: myProfile } = useSession();
+  const myUsername = myProfile?.username;
   const navigate = useNavigate();
   const [targetProfile, setTargetProfile] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const lookupUsername = username ?? myProfile?.username;
+    const lookupUsername = username ?? myUsername;
     if (!lookupUsername) return;
     setLoading(true);
     supabase
@@ -47,7 +48,7 @@ function ProfilePage() {
         }
         setLoading(false);
       });
-  }, [username, myProfile]);
+  }, [username, myUsername]);
 
   const { isFollowing, followerCount, followingCount, toggleFollow } = useFollow(targetProfile?.id);
 

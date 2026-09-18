@@ -1,4 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import LoginPage from './pages/LoginPage.jsx';
 import WritePage from './pages/WritePage.jsx';
 import FeedPage from './pages/FeedPage.jsx';
@@ -17,8 +19,18 @@ import { useSession } from './hooks/useSession.js';
  * <Route path="/me" element={<RedirectToMyProfile />} />
  */
 function RedirectToMyProfile() {
-  const { profile } = useSession();
-  if (!profile) return null;
+  const { profile, loading } = useSession();
+
+  if (loading) return null;
+
+  if (!profile) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+        <Typography>프로필 정보를 불러올 수 없습니다. 다시 로그인해 주세요.</Typography>
+      </Box>
+    );
+  }
+
   return <Navigate to={`/profile/${profile.username}`} replace />;
 }
 
