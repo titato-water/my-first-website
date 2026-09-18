@@ -6,6 +6,10 @@ import CardContent from '@mui/material/CardContent';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import { usePostLike } from '../../hooks/usePostLike.js';
 
 /**
  * PostCard
@@ -18,6 +22,7 @@ import Box from '@mui/material/Box';
 function PostCard({ post }) {
   const navigate = useNavigate();
   const author = post.it_users;
+  const { isLiked, likesCount, toggleLike } = usePostLike(post);
 
   return (
     <Card sx={{ mb: 2 }}>
@@ -32,14 +37,17 @@ function PostCard({ post }) {
         component="img"
         image={post.image_url}
         alt={post.caption ?? '게시물 이미지'}
-        onDoubleClick={() => navigate(`/posts/${post.id}`)}
+        onDoubleClick={toggleLike}
         onClick={() => navigate(`/posts/${post.id}`)}
         sx={{ aspectRatio: '1 / 1', objectFit: 'cover', cursor: 'pointer' }}
       />
       <CardContent>
         <Typography sx={{ fontSize: { xs: '0.95rem', md: '1rem' } }}>{post.caption}</Typography>
-        <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
-          <Typography sx={{ fontSize: '0.85rem', color: 'text.secondary' }}>좋아요 {post.likes_count}</Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1 }}>
+          <IconButton onClick={toggleLike} size="small" sx={{ minWidth: 44, minHeight: 44 }}>
+            {isLiked ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
+          </IconButton>
+          <Typography sx={{ fontSize: '0.85rem', color: 'text.secondary' }}>{likesCount}</Typography>
           <Typography sx={{ fontSize: '0.85rem', color: 'text.secondary' }}>댓글 {post.comments_count}</Typography>
           <Typography sx={{ fontSize: '0.85rem', color: 'text.secondary' }}>공유 {post.shares_count}</Typography>
         </Box>
