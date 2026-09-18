@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { usePosts } from '../hooks/usePosts.js';
 import PostCard from '../components/feed/PostCard.jsx';
+import StoryBar from '../components/feed/StoryBar.jsx';
 
 /**
  * FeedPage
@@ -35,6 +36,8 @@ function FeedPage() {
 
   return (
     <Box>
+      <StoryBar />
+
       {posts.map((post) => (
         <PostCard key={post.id} post={post} />
       ))}
