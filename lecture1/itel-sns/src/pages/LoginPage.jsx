@@ -53,6 +53,25 @@ function LoginPage() {
       return;
     }
     setIsSubmitting(true);
+
+    const { data: existingUser, error: usernameCheckError } = await supabase
+      .from('it_users')
+      .select('id')
+      .eq('username', username)
+      .maybeSingle();
+
+    if (usernameCheckError) {
+      setIsSubmitting(false);
+      setErrorMessage('닉네임 확인에 실패했습니다: ' + usernameCheckError.message);
+      return;
+    }
+
+    if (existingUser) {
+      setIsSubmitting(false);
+      setErrorMessage('이미 사용 중인 닉네임입니다. 다른 닉네임을 입력해 주세요.');
+      return;
+    }
+
     const { data, error } = await supabase.auth.signUp({ email, password });
     if (error || !data.user) {
       setIsSubmitting(false);
