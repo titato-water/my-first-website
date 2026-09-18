@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import ToggleButton from '@mui/material/ToggleButton';
@@ -13,7 +14,9 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { supabase } from '../lib/supabase.js';
 import { usePostLike } from '../hooks/usePostLike.js';
 import { usePostReaction } from '../hooks/usePostReaction.js';
+import { useReportBlock } from '../hooks/useReportBlock.js';
 import CommentSection from '../components/feed/CommentSection.jsx';
+import ReportDialog from '../components/feed/ReportDialog.jsx';
 
 /**
  * PostDetailPage
@@ -60,12 +63,30 @@ function PostDetailContent({ post, onBack }) {
   const author = post.it_users;
   const { isLiked, likesCount, toggleLike } = usePostLike(post);
   const { myReaction, recommendCount, notRecommendCount, setReaction } = usePostReaction(post);
+  const [isReportOpen, setIsReportOpen] = useState(false);
+  const { blockUser } = useReportBlock();
 
   return (
     <Box>
       <IconButton onClick={onBack} sx={{ mb: 1 }}>
         <ArrowBackIcon />
       </IconButton>
+
+      <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+        <Button size="small" onClick={() => setIsReportOpen(true)}>
+          신고
+        </Button>
+        <Button size="small" color="error" onClick={() => blockUser(author.id)}>
+          차단
+        </Button>
+      </Box>
+
+      <ReportDialog
+        isOpen={isReportOpen}
+        onClose={() => setIsReportOpen(false)}
+        targetType="post"
+        targetId={post.id}
+      />
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
         <Avatar src={author?.avatar_url}>{author?.display_name?.[0]}</Avatar>
