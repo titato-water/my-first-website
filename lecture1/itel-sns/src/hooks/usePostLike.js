@@ -41,7 +41,7 @@ export function usePostLike(post) {
       await createNotification(post.user_id, session.user.id, 'like', post.id);
     }
     await supabase.from('it_posts').update({ likes_count: isLiked ? likesCount - 1 : likesCount + 1 }).eq('id', post.id);
-  }, [isLiked, likesCount, post.id, session]);
+  }, [isLiked, likesCount, post.id, post.user_id, session]);
 
   return { isLiked, likesCount, toggleLike };
 }
