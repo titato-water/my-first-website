@@ -76,7 +76,7 @@ function PostDetailContent({ post, onBack }) {
         <Button size="small" onClick={() => setIsReportOpen(true)}>
           신고
         </Button>
-        <Button size="small" color="error" onClick={() => blockUser(author.id)}>
+        <Button size="small" color="error" onClick={() => blockUser(post.user_id)}>
           차단
         </Button>
       </Box>
