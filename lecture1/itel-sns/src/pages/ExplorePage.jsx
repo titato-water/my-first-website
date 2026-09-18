@@ -26,19 +26,49 @@ function ExplorePage() {
 
   useEffect(() => {
     const run = async () => {
-      let query = supabase
-        .from('it_posts')
-        .select('id, image_url, caption, it_users!inner(username)')
-        .eq('is_story', false)
-        .order('created_at', { ascending: false })
-        .limit(60);
+      const trimmedKeyword = keyword.trim();
 
-      if (keyword.trim()) {
-        query = query.or(`caption.ilike.%${keyword}%,it_users.username.ilike.%${keyword}%`);
+      const baseQuery = () =>
+        supabase
+          .from('it_posts')
+          .select('id, image_url, caption, created_at, it_users!inner(username)')
+          .eq('is_story', false)
+          .order('created_at', { ascending: false })
+          .limit(60);
+
+      if (!trimmedKeyword) {
+        const { data, error } = await baseQuery();
+        if (error) {
+          console.error(error);
+        }
+        setPosts(data ?? []);
+        return;
       }
 
-      const { data } = await query;
-      setPosts(data ?? []);
+      // PostgREST/postgrest-js는 base 컬럼과 embedded 테이블 컬럼을 하나의 .or()로
+      // 함께 필터링할 수 없으므로, 두 번의 쿼리로 나눠 조회한 뒤 클라이언트에서 병합한다.
+      const [captionResult, usernameResult] = await Promise.all([
+        baseQuery().ilike('caption', `%${trimmedKeyword}%`),
+        baseQuery().or(`username.ilike.%${trimmedKeyword}%`, { referencedTable: 'it_users' }),
+      ]);
+
+      if (captionResult.error) {
+        console.error(captionResult.error);
+      }
+      if (usernameResult.error) {
+        console.error(usernameResult.error);
+      }
+
+      const mergedById = new Map();
+      [...(captionResult.data ?? []), ...(usernameResult.data ?? [])].forEach((post) => {
+        mergedById.set(post.id, post);
+      });
+
+      const merged = Array.from(mergedById.values())
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        .slice(0, 60);
+
+      setPosts(merged);
     };
     run();
   }, [keyword]);
