@@ -5,11 +5,14 @@ import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import CircularProgress from '@mui/material/CircularProgress';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import ToggleButton from '@mui/material/ToggleButton';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { supabase } from '../lib/supabase.js';
 import { usePostLike } from '../hooks/usePostLike.js';
+import { usePostReaction } from '../hooks/usePostReaction.js';
 import CommentSection from '../components/feed/CommentSection.jsx';
 
 /**
@@ -56,6 +59,7 @@ function PostDetailPage() {
 function PostDetailContent({ post, onBack }) {
   const author = post.it_users;
   const { isLiked, likesCount, toggleLike } = usePostLike(post);
+  const { myReaction, recommendCount, notRecommendCount, setReaction } = usePostReaction(post);
 
   return (
     <Box>
@@ -86,6 +90,16 @@ function PostDetailContent({ post, onBack }) {
         </IconButton>
         <Typography>{likesCount}</Typography>
       </Box>
+
+      <ToggleButtonGroup
+        value={myReaction}
+        exclusive
+        onChange={(_event, value) => value && setReaction(value)}
+        sx={{ mb: 2 }}
+      >
+        <ToggleButton value="recommend">추천 {recommendCount}</ToggleButton>
+        <ToggleButton value="not_recommend">비추천 {notRecommendCount}</ToggleButton>
+      </ToggleButtonGroup>
 
       <CommentSection postId={post.id} />
     </Box>
