@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -7,6 +7,7 @@ import Button from '@mui/material/Button';
 import Rating from '@mui/material/Rating';
 import Grid from '@mui/material/Grid';
 import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
 import { usePosts } from '../hooks/usePosts.js';
 import { getRandomImageOptions } from '../utils/randomImage.js';
 
@@ -21,7 +22,8 @@ import { getRandomImageOptions } from '../utils/randomImage.js';
 function WritePage() {
   const navigate = useNavigate();
   const { createPost } = usePosts();
-  const [imageOptions, setImageOptions] = useState(() => getRandomImageOptions());
+  const [imageOptions, setImageOptions] = useState([]);
+  const [isLoadingImages, setIsLoadingImages] = useState(true);
   const [selectedUrl, setSelectedUrl] = useState('');
   const [caption, setCaption] = useState('');
   const [deviceRating, setDeviceRating] = useState(0);
@@ -31,10 +33,24 @@ function WritePage() {
 
   const hasSelection = useMemo(() => Boolean(selectedUrl), [selectedUrl]);
 
-  const handleRefreshImages = () => {
-    setImageOptions(getRandomImageOptions());
-    setSelectedUrl('');
+  const handleRefreshImages = async () => {
+    setIsLoadingImages(true);
+    setErrorMessage('');
+    try {
+      const options = await getRandomImageOptions();
+      setImageOptions(options);
+      setSelectedUrl('');
+    } catch (error) {
+      setErrorMessage('이미지를 불러오지 못했습니다: ' + error.message);
+    } finally {
+      setIsLoadingImages(false);
+    }
   };
+
+  useEffect(() => {
+    handleRefreshImages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = async () => {
     if (!hasSelection) {
@@ -57,29 +73,39 @@ function WritePage() {
 
       {errorMessage && <Alert severity="warning">{errorMessage}</Alert>}
 
-      <Grid container spacing={1}>
-        {imageOptions.map((option) => (
-          <Grid size={{ xs: 4 }} key={option.seed}>
-            <Box
-              component="img"
-              src={option.url}
-              alt="후보 이미지"
-              onClick={() => setSelectedUrl(option.url)}
-              sx={{
-                width: '100%',
-                aspectRatio: '1 / 1',
-                objectFit: 'cover',
-                borderRadius: 1,
-                cursor: 'pointer',
-                outline: selectedUrl === option.url ? '3px solid' : 'none',
-                outlineColor: 'primary.main',
-              }}
-            />
-          </Grid>
-        ))}
-      </Grid>
+      {isLoadingImages ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+          <CircularProgress size={28} />
+        </Box>
+      ) : (
+        <Grid container spacing={1}>
+          {imageOptions.map((option) => (
+            <Grid size={{ xs: 4 }} key={option.id}>
+              <Box
+                component="img"
+                src={option.url}
+                alt="후보 이미지"
+                onClick={() => setSelectedUrl(option.url)}
+                sx={{
+                  width: '100%',
+                  aspectRatio: '1 / 1',
+                  objectFit: 'cover',
+                  borderRadius: 1,
+                  cursor: 'pointer',
+                  outline: selectedUrl === option.url ? '3px solid' : 'none',
+                  outlineColor: 'primary.main',
+                }}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      )}
 
-      <Button onClick={handleRefreshImages} sx={{ alignSelf: 'flex-start', minHeight: 44 }}>
+      <Button
+        onClick={handleRefreshImages}
+        disabled={isLoadingImages}
+        sx={{ alignSelf: 'flex-start', minHeight: 44 }}
+      >
         다른 이미지 보기
       </Button>
 

@@ -17,8 +17,12 @@ function StoryBar() {
   const { stories, addStory } = useStories();
 
   const handleAddStory = async () => {
-    const [option] = getRandomImageOptions(1);
-    await addStory(option.url);
+    try {
+      const [option] = await getRandomImageOptions(1);
+      await addStory(option.url);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
