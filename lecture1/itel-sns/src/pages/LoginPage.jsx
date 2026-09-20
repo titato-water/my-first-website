@@ -162,7 +162,6 @@ function LoginPage() {
                 type="date"
                 value={birthDate}
                 onChange={(event) => setBirthDate(event.target.value)}
-                slotProps={{ inputLabel: { shrink: true } }}
                 fullWidth
                 sx={{
                   '& input[type="date"]::-webkit-datetime-edit': {
