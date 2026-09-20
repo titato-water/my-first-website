@@ -31,7 +31,7 @@ function ExplorePage() {
       const baseQuery = () =>
         supabase
           .from('it_posts')
-          .select('id, image_url, caption, created_at, it_users!inner(username)')
+          .select('id, image_url, caption, created_at, it_users!it_posts_user_id_fkey!inner(username)')
           .eq('is_story', false)
           .order('created_at', { ascending: false })
           .limit(60);

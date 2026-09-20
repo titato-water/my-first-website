@@ -35,7 +35,7 @@ function PostDetailPage() {
   useEffect(() => {
     supabase
       .from('it_posts')
-      .select('*, it_users(username, display_name, avatar_url)')
+      .select('*, it_users!it_posts_user_id_fkey(username, display_name, avatar_url)')
       .eq('id', id)
       .single()
       .then(({ data }) => {

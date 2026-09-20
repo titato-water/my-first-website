@@ -28,7 +28,7 @@ export function usePosts() {
       const to = from + PAGE_SIZE - 1;
       const { data, error } = await supabase
         .from('it_posts')
-        .select('*, it_users(username, display_name, avatar_url)')
+        .select('*, it_users!it_posts_user_id_fkey(username, display_name, avatar_url)')
         .eq('is_story', false)
         .order('created_at', { ascending: false })
         .range(from, to);
@@ -53,7 +53,7 @@ export function usePosts() {
           device_rating: deviceRating || null,
           location: location || null,
         })
-        .select('*, it_users(username, display_name, avatar_url)')
+        .select('*, it_users!it_posts_user_id_fkey(username, display_name, avatar_url)')
         .single();
       if (!error) {
         setPosts((prev) => [data, ...prev]);
